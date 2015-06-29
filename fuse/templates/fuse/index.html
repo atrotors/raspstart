@@ -1,0 +1,54 @@
+{% load humanize %}
+{% load staticfiles %}
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>PC fuse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{% static "fuse/css/main.min.css" %}">
+    <script src="{% static "fuse/js/modernizr.min.js" %}"></script>
+  </head>
+  <body>
+    <div class="col-lg-2 col-md-3 col-sm-6 col-xs-12">
+      <h3>Turn my PC on!</h3>
+      <div class="panel-group" id="accordion" role="tablist">
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                Show past requests
+              </a>
+            </h4>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+            <div class="panel-body">
+              <ul class="list-unstyled">
+                {% for request in requests %}
+                  <li>
+                    {{ request.request_time|naturaltime }}
+                    {% if request.recieved %}
+                      <span class="text-success">True</span>
+                    {% else %}
+                      <span class="text-danger">False</span>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form action="{% url 'fuse:submit' %}" method="post">
+        <div class="form-group">
+          {% csrf_token %}
+          <label for="pass">Password:</label>
+          <input type="password" class="form-control" id="pass" name="pass" placeholder="Enter password">
+        </div>
+        <button type="submit" class="btn btn-default">Turn On!</button>
+      </form>
+    </div>
+    <script src="{% static "fuse/js/main.min.js" %}" charset="utf-8"></script>
+  </body>
+</html>
