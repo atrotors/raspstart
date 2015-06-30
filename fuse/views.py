@@ -1,23 +1,35 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from time import mktime
 
 from .models import Request
 
 def index(request):
-  return render(request, 'fuse/index.html', {'requests': Request.objects.all()})
+  alert = {'exist': False, 'label': None, 'text': None}
+  if 'a' in request.GET and request.GET['a'] in ['wrong', 'nopass', 'pass']:
+    alert['exist'] = True
+    if request.GET['a'] == 'wrong':
+      alert['label'] = 'warning'
+      alert['text'] = 'Wrong password, try again!'
+    elif request.GET['a'] == 'nopass':
+      alert['label'] = 'danger'
+      alert['text'] = 'You have to enter the password!'
+    elif request.GET['a'] == 'pass':
+      alert['label'] = 'success'
+      alert['text'] = 'Request sent.'
+
+  return render(request, 'fuse/index.html', {'requests': Request.objects.all(), 'alert': alert})
 
 def submit(request):
-  redirect_script = '<script type="text/javascript">setTimeout(function(){window.location.replace('+reverse('fuse:index')+');}, 2000);</script>'
   try:
-    if request.POST['pass'] == "RaspberryStart":
+    if request.POST['pass'] == 'RaspberryStart':
       Request().save()
-      return redirect('fuse:index')
+      return HttpResponseRedirect(reverse('fuse:index')+'?a=pass')
     else:
-      return HttpResponse("Incorrect Parrword!"+redirect_script)
+      return HttpResponseRedirect(reverse('fuse:index')+'?a=wrong')
   except (KeyError):
-    return HttpResponse("You need to submit a password!"+redirect_script)
+    return HttpResponseRedirect(reverse('fuse:index')+'?a=nopass')
 
 def check(request):
   if len(Request.objects.filter(recieved=False)):
@@ -28,6 +40,3 @@ def check(request):
     r.recieved = True
     r.save()
   return JsonResponse({'signal': True, 'timestamp': mktime(r.request_time.timetuple())})
-
-def verify(request):
-  return HttpResponse("Hello, world!")

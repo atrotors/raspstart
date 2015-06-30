@@ -13,16 +13,22 @@
   <body>
     <div class="col-lg-2 col-md-3 col-sm-6 col-xs-12">
       <h3>Turn my PC on!</h3>
-      <div class="panel-group" id="accordion" role="tablist">
+      {% if alert.exist %}
+      <div class="alert alert-{{alert.label}} alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        {{alert.text}}
+      </div>
+      {% endif %}
+      <div class="panel-group" id="drop-parent" role="tablist">
         <div class="panel panel-default">
-          <div class="panel-heading" role="tab" id="headingOne">
+          <div class="panel-heading" role="tab" id="heading">
             <h4 class="panel-title">
-              <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+              <a data-toggle="collapse" data-parent="#drop-parent" href="#drop" aria-expanded="false" aria-controls="drop">
                 Show past requests
               </a>
             </h4>
           </div>
-          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div id="drop" class="panel-collapse collapse{% if alert.label == 'success' %} in{% endif %}" role="tabpanel" aria-labelledby="heading">
             <div class="panel-body">
               <ul class="list-unstyled">
                 {% for request in requests %}
