@@ -1,5 +1,4 @@
 {% load humanize %}
-{% load staticfiles %}
 <!doctype html>
 <html>
   <head>
@@ -28,12 +27,12 @@
               <ul class="list-unstyled">
                 {% for request in requests %}
                   <li>
-                    {{ request.request_time|naturaltime }}
                     {% if request.recieved %}
-                      <span class="text-success">True</span>
+                      <i class="fa fa-check-square-o text-success"></i>
                     {% else %}
-                      <span class="text-danger">False</span>
+                      <i class="fa fa-square-o text-danger"></i>
                     {% endif %}
+                    {{ request.request_time|naturaltime }}
                   </li>
                 {% endfor %}
               </ul>
