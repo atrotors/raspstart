@@ -30,7 +30,7 @@
           </div>
           <div id="drop" class="panel-collapse collapse{% if alert.label == 'success' %} in{% endif %}" role="tabpanel" aria-labelledby="heading">
             <div class="panel-body">
-              <ul class="list-unstyled">
+              <ul class="list-unstyled" id="requests">
                 {% for request in requests %}
                   <li>
                     {% if request.recieved %}
@@ -57,5 +57,24 @@
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" charset="utf-8"></script>
+    <script>
+      $(function() {
+        setInterval(function() {
+          var tick_box = '<i class="fa fa-check-square-o text-success"></i> ';
+          var empty_box = '<i class="fa fa-square-o text-danger"></i> ';
+          $.ajax({
+            url: '{% url 'fuse:ajax_history' %}',
+          }).done(function(data) {
+            for(i = 0; i < data.requests.length; i++) {
+              if (data.requests[i].recieved) {
+                $('#requests>li:nth-child(' + (i+1) + ')').html(tick_box+data.requests[i].timepast);
+              } else {
+                $('#requests>li:nth-child(' + (i+1) + ')').html(empty_box+data.requests[i].timepast);
+              }
+            }
+          });
+        }, 1000);
+      });
+    </script>
   </body>
 </html>

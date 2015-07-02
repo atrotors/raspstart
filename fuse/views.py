@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib.humanize.templatetags.humanize import naturaltime
 from time import mktime
 
 from .models import Request
@@ -20,6 +21,10 @@ def index(request):
       alert['text'] = 'Request sent.'
 
   return render(request, 'fuse/index.html', {'requests': Request.objects.all(), 'alert': alert})
+
+def ajax_history(request):
+  req_list = [{'recieved': req.recieved, 'timepast': naturaltime(req.request_time)} for req in Request.objects.all()]
+  return JsonResponse({'requests': req_list})
 
 def submit(request):
   try:
