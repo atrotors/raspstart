@@ -9,10 +9,22 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
+    <style>
+      #power_button {
+                transition: opacity 0.5s;
+        -webkit-transition: opacity 0.5s;
+      }
+    </style>
   </head>
   <body>
     <div class="col-lg-2 col-md-3 col-sm-6 col-xs-12">
-      <h3>Turn my PC on!</h3>
+      <h3>
+        Turn my PC on!
+        <svg id="power_button" width="25" height="25" style="vertical-align: bottom;">
+           <circle cx="11.25" cy="11.25" r="7.5" stroke="none" stroke-width="0" fill="#0091db" />
+           <circle cx="11.25" cy="11.25" r="10" stroke="#0091db" stroke-width="1.875" fill="none" />
+        </svg>
+      </h3>
       {% if alert.exist %}
       <div class="alert alert-{{alert.label}} alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -57,8 +69,17 @@
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" charset="utf-8"></script>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script>
       $(function() {
+        var socket = io.connect('/websocket/');
+        socket.on('LED', function(msg){
+          if(msg == 'on') {
+            $('#power_button').css({ opacity: 1 });
+          } else if(msg == 'off') {
+            $('#power_button').css({ opacity: 0 });
+          }
+        });
         setInterval(function() {
           var tick_box = '<i class="fa fa-check-square-o text-success"></i> ';
           var empty_box = '<i class="fa fa-square-o text-danger"></i> ';

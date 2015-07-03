@@ -1,0 +1,9 @@
+{
+  "name": "power-button",
+  "version": "0.0.1",
+  "description": "update power button light using websockets",
+  "dependencies": {
+    "express": "~4.13.0",
+    "socket.io": "~1.3.5"
+  }
+}
