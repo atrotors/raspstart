@@ -20,7 +20,7 @@
     <div class="col-lg-2 col-md-3 col-sm-6 col-xs-12">
       <h3>
         Turn my PC on!
-        <svg id="power_button" width="25" height="25" style="vertical-align: bottom;">
+        <svg id="power_button" width="25" height="25" style="vertical-align: bottom; opacity: 0;">
            <circle cx="11.25" cy="11.25" r="7.5" stroke="none" stroke-width="0" fill="#0091db" />
            <circle cx="11.25" cy="11.25" r="10" stroke="#0091db" stroke-width="1.875" fill="none" />
         </svg>
@@ -72,7 +72,7 @@
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script>
       $(function() {
-        var socket = io.connect('/websocket/');
+        var socket = io.connect('/websocket:3000');
         socket.on('LED', function(msg){
           if(msg == 'on') {
             $('#power_button').css({ opacity: 1 });
