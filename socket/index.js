@@ -1,6 +1,6 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var http = require('http');
+var server = http.createServer().listen(3000, '127.0.0.1');
+var io = require('socket.io').listen(server);
 
 var state;
 
@@ -10,13 +10,11 @@ io.on('connection', function(socket){
 
   socket.on('power_button', function(status){
     if (status == 'true') {
-      io.emit('LED', 'on');
+      socket.broadcast.emit('LED', 'on');
       state = 'on';
     } else if (status == 'false') {
-      io.emit('LED', 'off');
+      socket.broadcast.emit('LED', 'off');
       state = 'off';
     }
   });
 });
-
-http.listen(3000, function(){});

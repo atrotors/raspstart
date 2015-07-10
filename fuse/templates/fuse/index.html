@@ -10,9 +10,17 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
     <style>
+      html {
+        padding-bottom: 20px;
+      }
+
       #power_button {
                 transition: opacity 0.5s;
         -webkit-transition: opacity 0.5s;
+      }
+
+      .panel-heading {
+        cursor: pointer;
       }
     </style>
   </head>
@@ -34,23 +42,22 @@
       <div class="panel-group" id="drop-parent" role="tablist">
         <div class="panel panel-default">
           <div class="panel-heading" role="tab" id="heading">
-            <h4 class="panel-title">
-              <a data-toggle="collapse" data-parent="#drop-parent" href="#drop" aria-expanded="false" aria-controls="drop">
-                Show past requests
-              </a>
+            <h4 class="panel-title" data-toggle="collapse" data-parent="#drop-parent" href="#drop" aria-expanded="false" aria-controls="drop">
+              Show past requests
+              <span class="pull-right"><i class="fa fa-chevron-down"></i></span>
             </h4>
           </div>
           <div id="drop" class="panel-collapse collapse{% if alert.label == 'success' %} in{% endif %}" role="tabpanel" aria-labelledby="heading">
             <div class="panel-body">
               <ul class="list-unstyled" id="requests">
                 {% for request in requests %}
-                  <li>
+                  <li data-id="{{ reqeust.id }}">
                     {% if request.recieved %}
                       <i class="fa fa-check-square-o text-success"></i>
                     {% else %}
                       <i class="fa fa-square-o text-danger"></i>
                     {% endif %}
-                    {{ request.request_time|naturaltime }}
+                    <span class="req-time">{{ request.request_time|naturaltime }}</span>
                   </li>
                 {% endfor %}
               </ul>
@@ -68,33 +75,29 @@
       </form>
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" charset="utf-8"></script>
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="//cdn.socket.io/socket.io-1.2.0.js"></script>
     <script>
       $(function() {
-        var socket = io.connect('/websocket:3000');
+        var socket = io();
         socket.on('LED', function(msg){
-          if(msg == 'on') {
+          if (msg == 'on') {
             $('#power_button').css({ opacity: 1 });
-          } else if(msg == 'off') {
+
+          } else if (msg == 'off') {
             $('#power_button').css({ opacity: 0 });
           }
         });
-        setInterval(function() {
-          var tick_box = '<i class="fa fa-check-square-o text-success"></i> ';
-          var empty_box = '<i class="fa fa-square-o text-danger"></i> ';
-          $.ajax({
-            url: '{% url 'fuse:ajax_history' %}',
-          }).done(function(data) {
-            for(i = 0; i < data.requests.length; i++) {
-              if (data.requests[i].recieved) {
-                $('#requests>li:nth-child(' + (i+1) + ')').html(tick_box+data.requests[i].timepast);
-              } else {
-                $('#requests>li:nth-child(' + (i+1) + ')').html(empty_box+data.requests[i].timepast);
-              }
-            }
-          });
-        }, 1000);
+
+        $('#drop').on('show.bs.collapse', function () {
+          $('#' + $(this).attr('aria-labelledby') + ' .panel-title .fa')
+            .removeClass('fa-chevron-down').addClass('fa-chevron-up');
+        });
+
+        $('#drop').on('hide.bs.collapse', function () {
+          $('#' + $(this).attr('aria-labelledby') + ' .panel-title .fa')
+            .removeClass('fa-chevron-up').addClass('fa-chevron-down');
+        });
       });
     </script>
   </body>

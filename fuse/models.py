@@ -6,4 +6,7 @@ class Request(models.Model):
   request_time = models.DateTimeField(auto_now_add=True)
 
   def __str__(self):
-      return str(self.recieved) + ', ' + str(self.request_time)
+    return str(self.recieved) + ', ' + str(self.request_time)
+
+  def get_timestamp(self):
+    return int(mktime(self.request_time.timetuple()))
