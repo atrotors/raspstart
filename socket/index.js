@@ -1,6 +1,9 @@
 var http = require('http');
 var server = http.createServer().listen(3000, '127.0.0.1');
 var io = require('socket.io').listen(server);
+var redis = require("redis"),
+client = redis.createClient();
+client.subscribe('fuse.socketio')
 
 var state;
 
@@ -17,4 +20,9 @@ io.on('connection', function(socket){
       state = 'off';
     }
   });
+});
+
+client.on('message', function(chnl, msg) {
+  console.log('redis msg: ', msg);
+  io.emit('history-recieved', msg)
 });

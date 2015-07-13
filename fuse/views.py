@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.humanize.templatetags.humanize import naturaltime
+import redis
 
 from .models import Request
 
@@ -50,5 +51,8 @@ def check(request):
   if request.GET.get('dismiss'):
     r.recieved = True
     r.save()
+
+    red = redis.StrictRedis(host='localhost', port=6379, db=0)
+    red.publish('fuse.socketio', r.id)
 
   return JsonResponse({'signal': True, 'timestamp': r.get_timestamp()})

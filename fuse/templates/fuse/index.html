@@ -51,7 +51,7 @@
             <div class="panel-body">
               <ul class="list-unstyled" id="requests">
                 {% for request in requests %}
-                  <li data-id="{{ reqeust.id }}">
+                  <li data-id="{{ request.id }}">
                     {% if request.recieved %}
                       <i class="fa fa-check-square-o text-success"></i>
                     {% else %}
@@ -80,6 +80,7 @@
     <script>
       $(function() {
         var socket = io();
+
         socket.on('LED', function(msg){
           if (msg == 'on') {
             $('#power_button').css({ opacity: 1 });
@@ -87,6 +88,10 @@
           } else if (msg == 'off') {
             $('#power_button').css({ opacity: 0 });
           }
+        });
+
+        socket.on('history-recieved', function (msg) {
+          $('#requests li[data-id=' + msg + '] i').removeClass('fa-square-o text-danger').addClass('fa-check-square-o text-success');
         });
 
         $('#drop').on('show.bs.collapse', function () {
